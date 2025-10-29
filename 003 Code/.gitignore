@@ -1,0 +1,40 @@
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*$py.class
+build/
+dist/
+*.egg-info/
+.eggs/
+*.pyc
+*.pyo
+
+# ---- Virtual Env ----
+venv/
+.venv/
+env/
+ENV/
+
+# ---- Environment ----
+.env
+.env.*
+
+# ---- IDE ----
+.vscode/
+.idea/
+
+# ---- OS ----
+.DS_Store
+Thumbs.db
+
+# ---- Logs & Cache ----
+*.log
+logs/
+.cache/
+
+# Gradio 임시 파일
+.gradio/
+
+# results & uploads folders
+results/
+uploads/
