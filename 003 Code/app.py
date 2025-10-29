@@ -24,10 +24,10 @@ def process_video(video_file):
 demo = gr.Interface(
     fn=process_video,
     inputs=gr.Video(
-        label="영상 업로드"
+        label="업로드한 영상"
         ),
     outputs=gr.Video(
-        label="분석 결과"
+        label="분석 영상"
         ),
     title="초보 클라이머를 위한 자세 추정 기반 분석 도구",
     description=(

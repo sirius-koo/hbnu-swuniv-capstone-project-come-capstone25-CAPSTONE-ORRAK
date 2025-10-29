@@ -65,7 +65,7 @@ def analyze_video(video_path, result_path, ffmpeg_path="ffmpeg"):
     base_name = os.path.splitext(video_path)[0] # [0]은 확장자를 제외한 경로/파일명 (예: uploads\IMG_0922)
     normalized_video_path = f"{base_name}_normalized_{uuid.uuid4().hex}.mp4"
 
-    # --- FFprobe로 회전 값 직접 읽기 (더 안정적인 방법) ---
+    # --- FFprobe로 회전 값 직접 읽기 ---
     print("=========================================")
     print("     [DEBUG] FFprobe 회전 로직 시작")
     print("=========================================")
@@ -161,7 +161,6 @@ def analyze_video(video_path, result_path, ffmpeg_path="ffmpeg"):
     temp_path = result_path.replace(".mp4", f"_cv_temp_{uuid.uuid4().hex}.mp4")
     out = cv2.VideoWriter(temp_path, cv2.VideoWriter_fourcc(*'mp4v'), fps, (width, height))
 
-    # (↓↓↓ 루프 시작 전에 변수 2개 추가 ↓↓↓)
     frame_counter = 0
     last_known_results = None
 
@@ -171,29 +170,24 @@ def analyze_video(video_path, result_path, ffmpeg_path="ffmpeg"):
             if not ret:
                 break
 
-            # (↓↓↓ 카운터 증가 및 pose.process() 위치 이동 ↓↓↓)
             frame_counter += 1
 
             # 기존
             # frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             # results = pose.process(frame_rgb)
 
-            # 새 코드: 3프레임당 1번만 mediapipe 실행
-            if frame_counter % 3 == 0: 
+            # 새 코드: N프레임당 1번만 mediapipe 실행
+            if frame_counter % 2 == 0: 
                 frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 results = pose.process(frame_rgb)
                 if results.pose_landmarks: # 유효한 결과만 저장
                     last_known_results = results
             else:
-                # 3프레임 중 2프레임은 기존 결과 사용
+                # N프레임 중 2프레임은 기존 결과 사용
                 results = last_known_results
 
             r_angle, l_angle = None, None
             r_status, l_status = "---", "---"
-
-            # 기존
-            # if results.pose_landmarks:
-            #     lms = results.pose_landmarks.landmark
             
             if results and results.pose_landmarks: 
                 lms = results.pose_landmarks.landmark
@@ -233,10 +227,10 @@ def analyze_video(video_path, result_path, ffmpeg_path="ffmpeg"):
                     cv2.fillPoly(overlay, [pts], color)
                     cv2.addWeighted(overlay, 0.3, frame, 0.7, 0, frame)
 
-            r_text = f"Right Elbow: {f'{r_angle:.1f}' if r_angle else '---'} ({r_status})"
-            l_text = f"Left Elbow:  {f'{l_angle:.1f}' if l_angle else '---'} ({l_status})"
-            for j, line in enumerate([r_text,l_text]):
-                cv2.putText(frame, line, (10,30 + j*30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255,255,255),2)
+            # r_text = f"Right Elbow: {f'{r_angle:.1f}' if r_angle else '---'} ({r_status})"
+            # l_text = f"Left Elbow:  {f'{l_angle:.1f}' if l_angle else '---'} ({l_status})"
+            # for j, line in enumerate([r_text,l_text]):
+            #     cv2.putText(frame, line, (10,30 + j*30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255,255,255),2)
 
             out.write(frame)
 
