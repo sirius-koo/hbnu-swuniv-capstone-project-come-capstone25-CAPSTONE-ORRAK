@@ -67,6 +67,8 @@ $\[
 
 ---
 # UI 
+<img src="Images/UI1.jpg" width="500" height="700">
+<img src="Images/UI2.jpg" width="500" height="700">
 
 # 사용 시나리오
 
